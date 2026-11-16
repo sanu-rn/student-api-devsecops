@@ -12,9 +12,9 @@ public class StudentController {
     @PostMapping
     public Student createStudent(@RequestBody StudentRequest request) {
         Student student = new Student();
-        student.setName(request.getName());
-        student.setEmail(request.getEmail());
-        student.setCourse(request.getCourse());
+        student.setName(request.name());
+        student.setEmail(request.email());
+        student.setCourse(request.course());
         return studentRepository.save(student);
     }
     @GetMapping
@@ -28,9 +28,9 @@ public class StudentController {
     @PutMapping("/{id}")
     public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody StudentRequest request) {
         return studentRepository.findById(id).map(student -> {
-            student.setName(request.getName());
-            student.setEmail(request.getEmail());
-            student.setCourse(request.getCourse());
+            student.setName(request.name());
+            student.setEmail(request.email());
+            student.setCourse(request.course());
             return ResponseEntity.ok(studentRepository.save(student));
         }).orElse(ResponseEntity.notFound().build());
     }
