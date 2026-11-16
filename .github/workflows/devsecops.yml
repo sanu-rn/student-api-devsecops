@@ -31,6 +31,7 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t student-api:${{ github.sha }} .
+
       - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@v0.36.0
         with:
@@ -40,3 +41,23 @@ jobs:
           ignore-unfixed: false
           vuln-type: os,library
           severity: CRITICAL
+
+      - name: Configure AWS credentials
+        if: github.event_name == 'push'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+
+      - name: Login to Amazon ECR
+        if: github.event_name == 'push'
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag Docker image for ECR
+        if: github.event_name == 'push'
+        run: docker tag student-api:${{ github.sha }} 626672433528.dkr.ecr.ap-southeast-2.amazonaws.com/student-api:${{ github.sha }}
+
+      - name: Push Docker image to ECR
+        if: github.event_name == 'push'
+        run: docker push 626672433528.dkr.ecr.ap-southeast-2.amazonaws.com/student-api:${{ github.sha }}
