@@ -10,7 +10,11 @@ public class StudentController {
         this.studentRepository = studentRepository;
     }
     @PostMapping
-    public Student createStudent(@RequestBody Student student) {
+    public Student createStudent(@RequestBody StudentRequest request) {
+        Student student = new Student();
+        student.setName(request.getName());
+        student.setEmail(request.getEmail());
+        student.setCourse(request.getCourse());
         return studentRepository.save(student);
     }
     @GetMapping
@@ -22,11 +26,11 @@ public class StudentController {
         return studentRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student updatedStudent) {
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody StudentRequest request) {
         return studentRepository.findById(id).map(student -> {
-            student.setName(updatedStudent.getName());
-            student.setEmail(updatedStudent.getEmail());
-            student.setCourse(updatedStudent.getCourse());
+            student.setName(request.getName());
+            student.setEmail(request.getEmail());
+            student.setCourse(request.getCourse());
             return ResponseEntity.ok(studentRepository.save(student));
         }).orElse(ResponseEntity.notFound().build());
     }
